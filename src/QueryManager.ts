@@ -43,34 +43,6 @@ import {
 
 import { Observable, Observer, Subscription } from './util/Observable';
 
-export class ObservableQuery extends Observable<GraphQLResult> {
-  public subscribe(observer: Observer<GraphQLResult>): QuerySubscription {
-    return super.subscribe(observer) as QuerySubscription;
-  }
-
-  public result(): Promise<GraphQLResult> {
-    return new Promise((resolve, reject) => {
-      const subscription = this.subscribe({
-        next(result) {
-          resolve(result);
-          setTimeout(() => {
-            subscription.unsubscribe();
-          }, 0);
-        },
-        error(error) {
-          reject(error);
-        },
-      });
-    });
-  }
-}
-
-export interface QuerySubscription extends Subscription {
-  refetch(variables?: any): Promise<GraphQLResult>;
-  stopPolling(): void;
-  startPolling(pollInterval: number): void;
-}
-
 export interface WatchQueryOptions {
   query: Document;
   variables?: { [key: string]: any };
@@ -107,19 +79,6 @@ export class QueryManager {
     this.reduxRootKey = reduxRootKey;
 
     this.queryListeners = {};
-
-    // this.store is usually the fake store we get from the Redux middleware API
-    // XXX for tests, we sometimes pass in a real Redux store into the QueryManager
-    if (this.store['subscribe']) {
-      this.store['subscribe'](() => {
-        this.broadcastQueries();
-      });
-    }
-  }
-
-  // Called from middleware
-  public broadcastNewStore(store: any) {
-    this.broadcastQueries();
   }
 
   public mutate({
@@ -167,76 +126,38 @@ export class QueryManager {
     // Call just to get errors synchronously
     getQueryDefinition(options.query);
 
-    return new ObservableQuery((observer) => {
-      const queryId = this.startQuery(options, (queryStoreValue: QueryStoreValue) => {
-        if (!queryStoreValue.loading || queryStoreValue.returnPartialData) {
-          // XXX Currently, returning errors and data is exclusive because we
-          // don't handle partial results
-          if (queryStoreValue.graphQLErrors) {
-            if (observer.next) {
-              observer.next({ errors: queryStoreValue.graphQLErrors });
-            }
-          } else if (queryStoreValue.networkError) {
-            // XXX we might not want to re-broadcast the same error over and over if it didn't change
-            if (observer.error) {
-              observer.error(queryStoreValue.networkError);
-            } else {
-              console.error('Unhandled network error',
-                queryStoreValue.networkError,
-                queryStoreValue.networkError.stack);
-            }
+    const queryId = this.startQuery(options, (queryStoreValue: QueryStoreValue) => {
+      if (!queryStoreValue.loading || queryStoreValue.returnPartialData) {
+        // XXX Currently, returning errors and data is exclusive because we
+        // don't handle partial results
+        if (queryStoreValue.graphQLErrors) {
+          if (observer.next) {
+            observer.next({ errors: queryStoreValue.graphQLErrors });
+          }
+        } else if (queryStoreValue.networkError) {
+          // XXX we might not want to re-broadcast the same error over and over if it didn't change
+          if (observer.error) {
+            observer.error(queryStoreValue.networkError);
           } else {
-            const resultFromStore = readSelectionSetFromStore({
-              store: this.getApolloState().data,
-              rootId: queryStoreValue.query.id,
-              selectionSet: queryStoreValue.query.selectionSet,
-              variables: queryStoreValue.variables,
-              returnPartialData: options.returnPartialData,
-            });
+            console.error('Unhandled network error',
+              queryStoreValue.networkError,
+              queryStoreValue.networkError.stack);
+          }
+        } else {
+          const resultFromStore = readSelectionSetFromStore({
+            store: this.getApolloState().data,
+            rootId: queryStoreValue.query.id,
+            selectionSet: queryStoreValue.query.selectionSet,
+            variables: queryStoreValue.variables,
+            returnPartialData: options.returnPartialData,
+          });
 
-            if (observer.next) {
-              observer.next({ data: resultFromStore });
-            }
+          if (observer.next) {
+            observer.next({ data: resultFromStore });
           }
         }
-      });
-
-      return {
-        unsubscribe: () => {
-          this.stopQuery(queryId);
-        },
-        refetch: (variables: any): Promise<GraphQLResult> => {
-          // if we are refetching, we clear out the polling interval
-          // if the new refetch passes pollInterval: false, it won't recreate
-          // the timer for subsequent refetches
-          if (this.pollingTimer) {
-            clearInterval(this.pollingTimer);
-          }
-
-          // If no new variables passed, use existing variables
-          variables = variables || options.variables;
-
-          // Use the same options as before, but with new variables and forceFetch true
-          return this.fetchQuery(queryId, assign(options, {
-            forceFetch: true,
-            variables,
-          }) as WatchQueryOptions);
-        },
-        stopPolling: (): void => {
-          if (this.pollingTimer) {
-            clearInterval(this.pollingTimer);
-          }
-        },
-        startPolling: (pollInterval): void => {
-          this.pollingTimer = setInterval(() => {
-            const pollingOptions = assign({}, options) as WatchQueryOptions;
-            // subsequent fetches from polling always reqeust new data
-            pollingOptions.forceFetch = true;
-            this.fetchQuery(queryId, pollingOptions);
-          }, pollInterval);
-        },
-      };
-    });
+      }
+    }
   }
 
   public query(options: WatchQueryOptions): Promise<GraphQLResult> {
@@ -396,41 +317,8 @@ export class QueryManager {
 
   private startQuery(options: WatchQueryOptions, listener: QueryListener) {
     const queryId = this.generateQueryId();
-    this.queryListeners[queryId] = listener;
     this.fetchQuery(queryId, options);
-    if (options.pollInterval) {
-      this.pollingTimer = setInterval(() => {
-        const pollingOptions = assign({}, options) as WatchQueryOptions;
-        // subsequent fetches from polling always reqeust new data
-        pollingOptions.forceFetch = true;
-        this.fetchQuery(queryId, pollingOptions);
-      }, options.pollInterval);
-    }
     return queryId;
-  }
-
-  private stopQuery(queryId: string) {
-    // XXX in the future if we should cancel the request
-    // so that it never tries to return data
-    delete this.queryListeners[queryId];
-
-    // if we have a polling interval running, stop it
-    if (this.pollingTimer) {
-      clearInterval(this.pollingTimer);
-    }
-
-    this.store.dispatch({
-      type: 'APOLLO_QUERY_STOP',
-      queryId,
-    });
-  }
-
-  private broadcastQueries() {
-    const queries = this.getApolloState().queries;
-    forOwn(this.queryListeners, (listener: QueryListener, queryId: string) => {
-      const queryStoreValue = queries[queryId];
-      listener(queryStoreValue);
-    });
   }
 
   private generateQueryId() {

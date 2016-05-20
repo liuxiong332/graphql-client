@@ -69,12 +69,6 @@ export default class ApolloClient {
     };
   }
 
-  public watchQuery = (options: WatchQueryOptions): ObservableQuery => {
-    this.initStore();
-
-    return this.queryManager.watchQuery(options);
-  };
-
   public query = (options: WatchQueryOptions): Promise<GraphQLResult> => {
     this.initStore();
 
@@ -87,22 +81,6 @@ export default class ApolloClient {
   }): Promise<GraphQLResult> => {
     this.initStore();
     return this.queryManager.mutate(options);
-  };
-
-  public reducer(): Function {
-    return createApolloReducer(this.reducerConfig);
-  }
-
-  public middleware = () => {
-    return (store: ApolloStore) => {
-      this.setStore(store);
-
-      return (next) => (action) => {
-        const returnValue = next(action);
-        this.queryManager.broadcastNewStore(store.getState());
-        return returnValue;
-      };
-    };
   };
 
   public initStore() {
