@@ -8,10 +8,6 @@ import {
   getIdField,
 } from '../src/data/extensions';
 
-import {
-  NormalizedCache,
-} from '../src/data/store';
-
 import gql from '../src/gql';
 
 describe('diffing queries against the store', () => {
@@ -52,7 +48,7 @@ describe('diffing queries against the store', () => {
     `;
 
 
-    const store = {} as NormalizedCache;
+    const store = {};
 
     // Should return two root query selections
     assert.equal(diffQueryAgainstStore({

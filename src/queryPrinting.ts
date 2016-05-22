@@ -1,4 +1,5 @@
 import {
+  SelectionSet,
   OperationDefinition,
   VariableDefinition,
   Name,
@@ -6,9 +7,13 @@ import {
 
 import { print } from 'graphql/language/printer';
 
-import {
-  SelectionSetWithRoot,
-} from './queries/store';
+// TODO: remove this defination. diffAgainstStore.ts has
+// the same type defination.
+export interface SelectionSetWithRoot {
+  id: string;
+  typeName: string;
+  selectionSet: SelectionSet;
+}
 
 export function printQueryForMissingData(options: QueryDefinitionOptions) {
   return printQueryFromDefinition(queryDefinition(options));

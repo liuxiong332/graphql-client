@@ -12,10 +12,6 @@ import {
   getFragmentDefinition,
 } from '../queries/getFromAST';
 
-import {
-  NormalizedCache,
-} from './store';
-
 // import {
 //   printAST,
 // } from './debug';
@@ -25,7 +21,7 @@ export function readQueryFromStore({
   query,
   variables,
 }: {
-  store: NormalizedCache,
+  store: Object,
   query: Document,
   variables?: Object,
 }): Object {
@@ -45,7 +41,7 @@ export function readFragmentFromStore({
   rootId,
   variables,
 }: {
-  store: NormalizedCache,
+  store: Object,
   fragment: Document,
   rootId: string,
   variables?: Object,
@@ -67,7 +63,7 @@ export function readSelectionSetFromStore({
   variables,
   returnPartialData = false,
 }: {
-  store: NormalizedCache,
+  store: Object,
   rootId: string,
   selectionSet: SelectionSet,
   variables: Object,

@@ -12,14 +12,6 @@ import {
 } from './storeUtils';
 
 import {
-  NormalizedCache,
-} from './store';
-
-import {
-  SelectionSetWithRoot,
-} from '../queries/store';
-
-import {
   SelectionSet,
   Field,
   Document,
@@ -30,6 +22,13 @@ import {
   getQueryDefinition,
   getFragmentDefinition,
 } from '../queries/getFromAST';
+
+// TODO: move this defination to the store.
+export interface SelectionSetWithRoot {
+  id: string;
+  typeName: string;
+  selectionSet: SelectionSet;
+}
 
 export interface DiffResult {
   result: any;
@@ -42,7 +41,7 @@ export function diffQueryAgainstStore({
   query,
   variables,
 }: {
-  store: NormalizedCache,
+  store: Object,
   query: Document,
   variables?: Object,
 }): DiffResult {
@@ -63,7 +62,7 @@ export function diffFragmentAgainstStore({
   rootId,
   variables,
 }: {
-  store: NormalizedCache,
+  store: Object,
   fragment: Document,
   rootId: string,
   variables?: Object,
@@ -98,7 +97,7 @@ export function diffSelectionSetAgainstStore({
   variables,
 }: {
   selectionSet: SelectionSet,
-  store: NormalizedCache,
+  store: Object,
   rootId: string,
   throwOnMissingField: boolean,
   variables: Object,
@@ -205,7 +204,7 @@ function diffFieldAgainstStore({
   throwOnMissingField: boolean,
   variables: Object,
   rootId: string,
-  store: NormalizedCache,
+  store: Object,
 }): FieldDiffResult {
   const storeObj = store[rootId] || {};
   const storeFieldKey = storeKeyNameFromField(field, variables);

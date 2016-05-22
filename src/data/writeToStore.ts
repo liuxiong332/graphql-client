@@ -24,11 +24,6 @@ import {
 } from 'graphql';
 
 import {
-  NormalizedCache,
-  StoreObject,
-} from './store';
-
-import {
   IdGetter,
 } from './extensions';
 
@@ -49,16 +44,14 @@ import {
 export function writeFragmentToStore({
   result,
   fragment,
-  store = {} as NormalizedCache,
+  store = {},
   variables,
-  dataIdFromObject = null,
 }: {
   result: Object,
   fragment: Document,
-  store?: NormalizedCache,
+  store?: Object,
   variables?: Object,
-  dataIdFromObject?: IdGetter,
-}): NormalizedCache {
+}): Object {
   // Argument validation
   if (!fragment) {
     throw new Error('Must pass fragment.');
@@ -77,23 +70,20 @@ export function writeFragmentToStore({
     selectionSet,
     store,
     variables,
-    dataIdFromObject,
   });
 }
 
 export function writeQueryToStore({
   result,
   query,
-  store = {} as NormalizedCache,
+  store = {},
   variables,
-  dataIdFromObject = null,
 }: {
   result: Object,
   query: Document,
-  store?: NormalizedCache,
+  store?: Object,
   variables?: Object,
-  dataIdFromObject?: IdGetter,
-}): NormalizedCache {
+}): Object {
   const queryDefinition: OperationDefinition = getQueryDefinition(query);
 
   return writeSelectionSetToStore({
@@ -102,7 +92,6 @@ export function writeQueryToStore({
     selectionSet: queryDefinition.selectionSet,
     store,
     variables,
-    dataIdFromObject,
   });
 }
 
@@ -110,17 +99,15 @@ export function writeSelectionSetToStore({
   result,
   dataId,
   selectionSet,
-  store = {} as NormalizedCache,
+  store = {},
   variables,
-  dataIdFromObject,
 }: {
   dataId: string,
   result: any,
   selectionSet: SelectionSet,
-  store?: NormalizedCache,
+  store?: Object,
   variables: Object,
-  dataIdFromObject: IdGetter,
-}): NormalizedCache {
+}): Object {
   selectionSet.selections.forEach((selection) => {
     if (isField(selection)) {
       const resultFieldKey: string = resultKeyNameFromField(selection);
@@ -136,7 +123,6 @@ export function writeSelectionSetToStore({
         variables,
         store,
         field: selection,
-        dataIdFromObject,
       });
     } else if (isInlineFragment(selection)) {
       // XXX what to do if this tries to write the same fields? Also, type conditions...
@@ -146,7 +132,6 @@ export function writeSelectionSetToStore({
         store,
         variables,
         dataId,
-        dataIdFromObject,
       });
     } else {
       throw new Error('Non-inline fragments not supported.');
@@ -162,14 +147,12 @@ function writeFieldToStore({
   variables,
   store,
   dataId,
-  dataIdFromObject,
 }: {
   field: Field,
   value: any,
   variables: {},
-  store: NormalizedCache,
+  store: Object,
   dataId: string,
-  dataIdFromObject: IdGetter,
 }) {
   let storeValue;
 
@@ -188,14 +171,6 @@ function writeFieldToStore({
       } else {
         let itemDataId = `${dataId}.${storeFieldName}.${index}`;
 
-        if (dataIdFromObject) {
-          const semanticId = dataIdFromObject(item);
-
-          if (semanticId) {
-            itemDataId = semanticId;
-          }
-        }
-
         thisIdList.push(itemDataId);
 
         writeSelectionSetToStore({
@@ -204,7 +179,6 @@ function writeFieldToStore({
           store,
           selectionSet: field.selectionSet,
           variables,
-          dataIdFromObject,
         });
       }
     });
@@ -214,29 +188,20 @@ function writeFieldToStore({
     // It's an object
     let valueDataId = `${dataId}.${storeFieldName}`;
 
-    if (dataIdFromObject) {
-      const semanticId = dataIdFromObject(value);
-
-      if (semanticId) {
-        valueDataId = semanticId;
-      }
-    }
-
     writeSelectionSetToStore({
       dataId: valueDataId,
       result: value,
       store,
       selectionSet: field.selectionSet,
       variables,
-      dataIdFromObject,
     });
 
     storeValue = valueDataId;
   }
 
-  const newStoreObj = assign({}, store[dataId], {
+  const newStoreObj = assign(store[dataId] || {}, {
     [storeFieldName]: storeValue,
-  }) as StoreObject;
+  });
 
   store[dataId] = newStoreObj;
 }

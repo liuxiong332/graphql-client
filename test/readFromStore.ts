@@ -5,11 +5,6 @@ import {
   readFragmentFromStore,
 } from '../src/data/readFromStore';
 
-import {
-  NormalizedCache,
-  StoreObject,
-} from '../src/data/store';
-
 import gql from '../src/gql';
 
 describe('reading from the store', () => {
@@ -42,11 +37,11 @@ describe('reading from the store', () => {
       stringField: 'This is a string!',
       numberField: 5,
       nullField: null,
-    } as StoreObject;
+    };
 
     const store = {
       abcd: result,
-    } as NormalizedCache;
+    };
 
     const queryResult = readFragmentFromStore({
       store,
@@ -89,7 +84,7 @@ describe('reading from the store', () => {
         'numberField({"intArg":5,"floatArg":3.14})': 5,
         'stringField({"arg":"This is a string!"})': 'Heyo',
       },
-    } as NormalizedCache;
+    };
 
     const result = readFragmentFromStore({
       store,
@@ -117,13 +112,13 @@ describe('reading from the store', () => {
         stringField: 'This is a string too!',
         numberField: 6,
         nullField: null,
-      } as StoreObject,
+      },
     };
 
     const store = {
-      abcd: _.assign({}, _.assign({}, _.omit(result, 'nestedObj')), { nestedObj: 'abcde' }) as StoreObject,
+      abcd: _.assign({}, _.assign({}, _.omit(result, 'nestedObj')), { nestedObj: 'abcde' }),
       abcde: result.nestedObj,
-    } as NormalizedCache;
+    };
 
     const queryResult = readFragmentFromStore({
       store,
@@ -168,7 +163,7 @@ describe('reading from the store', () => {
           numberField: 7,
           nullField: null,
         },
-      ] as StoreObject[],
+      ],
     };
 
     const store = {
@@ -177,10 +172,10 @@ describe('reading from the store', () => {
           'abcd.nestedArray.0',
           'abcd.nestedArray.1',
         ],
-      }) as StoreObject,
+      }),
       'abcd.nestedArray.0': result.nestedArray[0],
       'abcd.nestedArray.1': result.nestedArray[1],
-    } as NormalizedCache;
+    };
 
     const queryResult = readFragmentFromStore({
       store,
@@ -227,7 +222,7 @@ describe('reading from the store', () => {
           numberField: 7,
           nullField: null,
         },
-      ] as StoreObject[],
+      ],
     };
 
     const store = {
@@ -236,9 +231,9 @@ describe('reading from the store', () => {
           null,
           'abcd.nestedArray.1',
         ],
-      }) as StoreObject,
+      }),
       'abcd.nestedArray.1': result.nestedArray[1],
-    } as NormalizedCache;
+    };
 
     const queryResult = readFragmentFromStore({
       store,
@@ -283,7 +278,7 @@ describe('reading from the store', () => {
           numberField: 7,
           nullField: null,
         },
-      ] as StoreObject[],
+      ],
     };
 
     const store = {
@@ -292,9 +287,9 @@ describe('reading from the store', () => {
           null,
           'abcde',
         ],
-      }) as StoreObject,
+      }),
       'abcde': result.nestedArray[1],
-    } as NormalizedCache;
+    };
 
     const queryResult = readFragmentFromStore({
       store,
@@ -333,9 +328,9 @@ describe('reading from the store', () => {
       stringField: 'This is a string!',
       numberField: 5,
       nullField: null,
-    } as StoreObject;
+    };
 
-    const store = { abcd: result } as NormalizedCache;
+    const store = { abcd: result };
 
     assert.throws(() => {
       readFragmentFromStore({
@@ -361,8 +356,8 @@ describe('reading from the store', () => {
     };
 
     const store = {
-      abcd: _.assign({}, _.assign({}, _.omit(result, 'nestedObj')), { nestedObj: null }) as StoreObject,
-    } as NormalizedCache;
+      abcd: _.assign({}, _.assign({}, _.omit(result, 'nestedObj')), { nestedObj: null }),
+    };
 
     const queryResult = readFragmentFromStore({
       store,
@@ -397,8 +392,8 @@ describe('reading from the store', () => {
     };
 
     const store = {
-      abcd: _.assign({}, _.assign({}, _.omit(result, 'simpleArray')), { simpleArray: result.simpleArray }) as StoreObject,
-    } as NormalizedCache;
+      abcd: _.assign({}, _.assign({}, _.omit(result, 'simpleArray')), { simpleArray: result.simpleArray }),
+    };
 
     const queryResult = readFragmentFromStore({
       store,
@@ -430,8 +425,8 @@ describe('reading from the store', () => {
     };
 
     const store = {
-      abcd: _.assign({}, _.assign({}, _.omit(result, 'simpleArray')), { simpleArray: result.simpleArray }) as StoreObject,
-    } as NormalizedCache;
+      abcd: _.assign({}, _.assign({}, _.omit(result, 'simpleArray')), { simpleArray: result.simpleArray }),
+    };
 
     const queryResult = readFragmentFromStore({
       store,
