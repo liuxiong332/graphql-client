@@ -46,11 +46,13 @@ export function writeFragmentToStore({
   fragment,
   store = {},
   variables,
+  dataIdFromObject,
 }: {
   result: Object,
   fragment: Document,
   store?: Object,
   variables?: Object,
+  dataIdFromObject?: IdGetter,
 }): Object {
   // Argument validation
   if (!fragment) {
@@ -70,6 +72,7 @@ export function writeFragmentToStore({
     selectionSet,
     store,
     variables,
+    dataIdFromObject,
   });
 }
 
@@ -78,11 +81,13 @@ export function writeQueryToStore({
   query,
   store = {},
   variables,
+  dataIdFromObject,
 }: {
   result: Object,
   query: Document,
   store?: Object,
   variables?: Object,
+  dataIdFromObject?: IdGetter,
 }): Object {
   const queryDefinition: OperationDefinition = getQueryDefinition(query);
 
@@ -92,6 +97,7 @@ export function writeQueryToStore({
     selectionSet: queryDefinition.selectionSet,
     store,
     variables,
+    dataIdFromObject,
   });
 }
 
@@ -101,12 +107,14 @@ export function writeSelectionSetToStore({
   selectionSet,
   store = {},
   variables,
+  dataIdFromObject,
 }: {
   dataId: string,
   result: any,
   selectionSet: SelectionSet,
   store?: Object,
   variables: Object,
+  dataIdFromObject?: IdGetter,
 }): Object {
   selectionSet.selections.forEach((selection) => {
     if (isField(selection)) {
@@ -123,6 +131,7 @@ export function writeSelectionSetToStore({
         variables,
         store,
         field: selection,
+        dataIdFromObject,
       });
     } else if (isInlineFragment(selection)) {
       // XXX what to do if this tries to write the same fields? Also, type conditions...
@@ -132,6 +141,7 @@ export function writeSelectionSetToStore({
         store,
         variables,
         dataId,
+        dataIdFromObject,
       });
     } else {
       throw new Error('Non-inline fragments not supported.');
@@ -147,12 +157,14 @@ function writeFieldToStore({
   variables,
   store,
   dataId,
+  dataIdFromObject,
 }: {
   field: Field,
   value: any,
   variables: {},
   store: Object,
   dataId: string,
+  dataIdFromObject?: IdGetter,
 }) {
   let storeValue;
 
@@ -169,7 +181,8 @@ function writeFieldToStore({
       if (isNull(item)) {
         thisIdList.push(null);
       } else {
-        let itemDataId = `${dataId}.${storeFieldName}.${index}`;
+        let itemDataId = (dataIdFromObject && dataIdFromObject(item))
+          || `${dataId}.${storeFieldName}.${index}`;
 
         thisIdList.push(itemDataId);
 
@@ -179,6 +192,7 @@ function writeFieldToStore({
           store,
           selectionSet: field.selectionSet,
           variables,
+          dataIdFromObject,
         });
       }
     });
@@ -186,7 +200,8 @@ function writeFieldToStore({
     storeValue = thisIdList;
   } else {
     // It's an object
-    let valueDataId = `${dataId}.${storeFieldName}`;
+    let valueDataId = (dataIdFromObject && dataIdFromObject(value))
+      || `${dataId}.${storeFieldName}`;
 
     writeSelectionSetToStore({
       dataId: valueDataId,
@@ -194,6 +209,7 @@ function writeFieldToStore({
       store,
       selectionSet: field.selectionSet,
       variables,
+      dataIdFromObject,
     });
 
     storeValue = valueDataId;

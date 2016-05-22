@@ -477,7 +477,6 @@ describe('writing to the store', () => {
     const normalized = writeFragmentToStore({
       fragment,
       result: _.cloneDeep(result),
-      dataIdFromObject: getIdField,
     });
 
     assert.deepEqual(normalized, {
@@ -544,7 +543,6 @@ describe('writing to the store', () => {
     const store = writeFragmentToStore({
       fragment,
       result: _.cloneDeep(result),
-      dataIdFromObject: getIdField,
     });
 
     const fragment2 = gql`
@@ -565,7 +563,6 @@ describe('writing to the store', () => {
       store,
       fragment: fragment2,
       result: result2,
-      dataIdFromObject: getIdField,
     });
 
     assert.deepEqual(store2, {

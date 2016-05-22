@@ -4,34 +4,23 @@ import {
 } from './networkInterface';
 
 import {
-  GraphQLResult,
   Document,
 } from 'graphql';
 
 import {
-  readQueryFromStore,
-  readFragmentFromStore,
-} from './data/readFromStore';
-
-import {
-  IdGetter,
-} from './data/extensions';
-
-import {
-  QueryOptions,
   QueryResultInfo,
   runQuery,
 } from './queryRunner';
 
 import {
-  runMutate
+  runMutate,
 } from './mutateRunner';
 
-import isUndefined = require('lodash.isundefined');
-
 function objectAssign(dest: Object, source: Object): Object {
-  for(let key in source) {
-    dest[key] = source[key];
+  for (let key in source) {
+    if (source.hasOwnProperty(key)) {
+      dest[key] = source[key];
+    }
   }
   return dest;
 }
@@ -45,7 +34,7 @@ export default class GraphqlClient {
     store,
   }: {
     networkInterface?: NetworkInterface,
-    store?: Object
+    store?: Object,
   } = {}) {
     this.networkInterface = networkInterface ? networkInterface :
       createNetworkInterface('/graphql');
@@ -55,11 +44,11 @@ export default class GraphqlClient {
   public query = (options: {
     query: Document,
     variables?: Object,
-    forceFetch?: boolean
+    forceFetch?: boolean,
   }): Promise<QueryResultInfo> => {
     return runQuery(objectAssign({
       store: this.store,
-      networkInterface: this.networkInterface
+      networkInterface: this.networkInterface,
     }, options) as any);
   };
 
@@ -69,7 +58,7 @@ export default class GraphqlClient {
   }): Promise<Object> => {
     return runMutate(objectAssign({
       store: this.store,
-      networkInterface: this.networkInterface
+      networkInterface: this.networkInterface,
     }, options) as any);
   };
 }

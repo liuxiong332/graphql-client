@@ -1,7 +1,4 @@
 import {
-  SelectionSet,
-  GraphQLError,
-  GraphQLResult,
   Document,
 } from 'graphql';
 
@@ -15,7 +12,7 @@ import {
 } from './networkInterface';
 
 import {
-  GraphqlError
+  GraphqlError,
 } from './graphqlError';
 
 import { print } from 'graphql/language/printer';
@@ -25,17 +22,17 @@ import {
 } from './data/writeToStore';
 
 export interface MutateOptions {
-  mutation: Document,
-  variables?: Object,
-  networkInterface: NetworkInterface,
-  store: Object
+  mutation: Document;
+  variables?: Object;
+  networkInterface: NetworkInterface;
+  store: Object;
 }
 
 export function runMutate({
   mutation,
   variables,
   networkInterface,
-  store
+  store,
 }: MutateOptions): Promise<Object> {
   const mutationDef = getMutationDefinition(mutation);
   const mutationString = print(mutationDef);

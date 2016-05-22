@@ -1,6 +1,4 @@
 import {
-  SelectionSet,
-  GraphQLError,
   GraphQLResult,
   Document,
 } from 'graphql';
@@ -24,7 +22,7 @@ import {
 } from './data/diffAgainstStore';
 
 import {
-  GraphqlError
+  GraphqlError,
 } from './graphqlError';
 
 import {
@@ -47,7 +45,7 @@ export interface QueryOptions {
   variables?: { [key: string]: any };
   forceFetch?: boolean;
   store: { [key: string]: any };
-  networkInterface: NetworkInterface
+  networkInterface: NetworkInterface;
 }
 
 export function runQuery({
@@ -108,9 +106,9 @@ export function runQuery({
     }
   }
 
-  function fetchFromServer(queryString: string) {
+  function fetchFromServer(queryS: string) {
     const request: Request = {
-      query: queryString,
+      query: queryS,
       variables: variables,
     };
 
