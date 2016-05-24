@@ -15,6 +15,5 @@ import './diffAgainstStore';
 import './networkInterface';
 import './queryRunnerTest';
 import './mutationRunnerTest';
-// import './client';
 // import './middleware';
-// import './gql';
+import './gql';
