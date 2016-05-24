@@ -15,6 +15,10 @@ import {
   GraphqlError,
 } from './graphqlError';
 
+import {
+  IdGetter,
+} from './data/extensions';
+
 import { print } from 'graphql/language/printer';
 
 import {
@@ -26,6 +30,7 @@ export interface MutateOptions {
   variables?: Object;
   networkInterface: NetworkInterface;
   store: Object;
+  dataIdFromObject?: IdGetter;
 }
 
 export function runMutate({
@@ -33,7 +38,8 @@ export function runMutate({
   variables,
   networkInterface,
   store,
-}: MutateOptions): Promise<Object> {
+  dataIdFromObject,
+}: MutateOptions): Promise<{result: any}> {
   const mutationDef = getMutationDefinition(mutation);
   const mutationString = print(mutationDef);
 
@@ -52,6 +58,7 @@ export function runMutate({
         selectionSet: mutationDef.selectionSet,
         variables: variables,
         store: store,
+        dataIdFromObject,
       });
       return { result: result.data };
     }
