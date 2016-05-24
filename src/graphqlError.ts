@@ -1,5 +1,5 @@
 export class GraphqlError extends Error {
-  public errors: string[];
+  public errors: any[];
 
   constructor(errors) {
     super('GraphQL Error');

@@ -8,12 +8,12 @@ process.env.NODE_ENV = 'test';
 declare function require(name: string);
 require('source-map-support').install();
 
-import './writeToStore';
+// import './writeToStore';
 // import './readFromStore';
 // import './roundtrip';
 // import './diffAgainstStore';
 // import './networkInterface';
-// import './QueryManager';
+import './queryRunnerTest';
 // import './client';
 // import './middleware';
 // import './gql';
