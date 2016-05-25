@@ -1,6 +1,6 @@
 {
-  "name": "apollo-client",
-  "version": "0.3.9",
+  "name": "graphql-client",
+  "version": "0.1.0",
   "description": "A simple yet functional GraphQL client.",
   "main": "./lib/src/index.js",
   "typings": "./lib/src/index.d.ts",
@@ -14,7 +14,7 @@
     "compile:browser": "rm -rf ./dist && mkdir ./dist && browserify ./lib/src/index.js -o=./dist/index.js && npm run minify:browser",
     "minify:browser": "uglifyjs --compress --mangle --screw-ie8 -o=./dist/index.min.js -- ./dist/index.js",
     "watch": "tsc -w",
-    "prepublish": "npm run compile",
+    "prepublish": "typings install && npm run compile",
     "lint": "grunt tslint",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --full-trace lib/test/tests.js",
     "postcoverage": "remap-istanbul --input coverage/coverage.json --type lcovonly --output coverage/lcov.info",
@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "apollostack/apollo-client"
+    "url": "liuxiong332/graphql-client"
   },
   "keywords": [
     "ecmascript",
@@ -33,7 +33,7 @@
     "npm",
     "react"
   ],
-  "author": "Sashko Stubailo <sashko@stubailo.com>",
+  "author": "liuxiong332 <liuxiong332@163.com>",
   "license": "MIT",
   "dependencies": {
     "es6-promise": "^3.1.2",
@@ -76,8 +76,7 @@
     "swapi-graphql": "^0.0.4",
     "tslint": "3.7.3",
     "typescript": "^1.8.9",
-    "typings": "^0.7.9",
-    "uglify-js": "^2.6.2",
-    "rxjs": "^5.0.0-beta.7"
+    "typings": "^1.0.4",
+    "uglify-js": "^2.6.2"
   }
 }
