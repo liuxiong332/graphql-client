@@ -1,5 +1,5 @@
 {
-  "name": "graphql-client",
+  "name": "graphql-speed",
   "version": "0.1.0",
   "description": "A simple yet functional GraphQL client.",
   "main": "./lib/src/index.js",
