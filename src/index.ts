@@ -13,8 +13,9 @@ import {
 } from './queryRunner';
 
 import {
-  runMutate,
-} from './mutateRunner';
+  MutationResult,
+  runMutation,
+} from './mutationRunner';
 
 function objectAssign(dest: Object, source: Object): Object {
   for (let key in source) {
@@ -23,6 +24,12 @@ function objectAssign(dest: Object, source: Object): Object {
     }
   }
   return dest;
+}
+
+import gql from './gql';
+
+export {
+  gql,
 }
 
 export default class GraphqlClient {
@@ -55,8 +62,8 @@ export default class GraphqlClient {
   public mutate = (options: {
     mutation: Document,
     variables?: Object,
-  }): Promise<Object> => {
-    return runMutate(objectAssign({
+  }): Promise<MutationResult> => {
+    return runMutation(objectAssign({
       store: this.store,
       networkInterface: this.networkInterface,
     }, options) as any);

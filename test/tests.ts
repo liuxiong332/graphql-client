@@ -17,3 +17,4 @@ import './queryRunnerTest';
 import './mutationRunnerTest';
 // import './middleware';
 import './gql';
+import './clientTest';

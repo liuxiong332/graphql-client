@@ -33,13 +33,17 @@ export interface MutateOptions {
   dataIdFromObject?: IdGetter;
 }
 
-export function runMutate({
+export interface MutationResult {
+  result: any;
+}
+
+export function runMutation({
   mutation,
   variables,
   networkInterface,
   store,
   dataIdFromObject,
-}: MutateOptions): Promise<{result: any}> {
+}: MutateOptions): Promise<MutationResult> {
   const mutationDef = getMutationDefinition(mutation);
   const mutationString = print(mutationDef);
 

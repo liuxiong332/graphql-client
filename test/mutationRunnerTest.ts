@@ -1,8 +1,8 @@
 import gql from '../src/gql';
 
 import {
-  runMutate,
-} from '../src/mutateRunner';
+  runMutation,
+} from '../src/mutationRunner';
 
 import {
   getIdField,
@@ -14,7 +14,7 @@ import {
   assert,
 } from 'chai';
 
-describe('mutateRunner', () => {
+describe('mutationRunner', () => {
   it('runs a mutation', () => {
     const mutation = gql`
       mutation makeListPrivate {
@@ -33,7 +33,7 @@ describe('mutateRunner', () => {
       }
     );
 
-    return runMutate({
+    return runMutation({
       networkInterface,
       store: {},
       mutation,
@@ -64,7 +64,7 @@ describe('mutateRunner', () => {
       }
     );
 
-    return runMutate({
+    return runMutation({
       networkInterface,
       store: {},
       mutation,
@@ -100,7 +100,7 @@ describe('mutateRunner', () => {
 
     const store = {};
 
-    return runMutate({
+    return runMutation({
       networkInterface,
       store,
       mutation,
