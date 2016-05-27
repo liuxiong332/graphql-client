@@ -3,7 +3,7 @@
   "scripts": {
     "start": "babel-node ./server.js",
     "update-schema": "babel-node ./scripts/updateSchema.js",
-    "preinstall": "cd ../.. && npm install --ignore-scripts && cd scripts/babel-relay-plugin && npm install --ignore-scripts"
+    "preinstall": "cd ../.. && npm install"
   },
   "dependencies": {
     "babel-core": "^6.5.2",
@@ -17,10 +17,13 @@
     "express-graphql": "0.4.9",
     "graphql": "0.4.17",
     "graphql-relay": "0.3.6",
+    "graphql-speed": "file:../../",
     "history": "1.17.0",
     "react": "0.14.7",
     "react-dom": "0.14.7",
-    "graphql-speed": "file:../../",
+    "react-redux": "^4.4.5",
+    "redux": "^3.5.2",
+    "redux-saga": "^0.10.4",
     "webpack": "1.12.13",
     "webpack-dev-server": "1.14.1"
   },

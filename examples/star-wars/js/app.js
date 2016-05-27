@@ -13,16 +13,20 @@
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Relay from 'react-relay';
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import createSagaMiddleware from 'redux-saga';
+
+import appReducer from './reducers';
 import StarWarsApp from './components/StarWarsApp';
-import StarWarsAppHomeRoute from './routes/StarWarsAppHomeRoute';
+
+const sagaMiddleware = createSagaMiddleware();
+
+let store = createStore(appReducer, applyMiddleware(sagaMiddleware));
 
 ReactDOM.render(
-  <Relay.RootContainer
-    Component={StarWarsApp}
-    route={new StarWarsAppHomeRoute({
-      factionNames: ['empire', 'rebels'],
-    })}
-  />,
+  <Provider store={store}>
+  	<StarWarsApp />
+  </Provider>,
   document.getElementById('root')
 );

@@ -11,44 +11,31 @@
  */
 
 import React from 'react';
-import Relay from 'react-relay';
+import { connect } from 'react-redux'
+
 import StarWarsShip from './StarWarsShip';
 import AddShipMutation from '../mutation/AddShipMutation';
 
 class StarWarsApp extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      factionId: 1,
-      shipName: '',
-    };
-  }
-
   handleAddShip() {
-    const name = this.state.shipName;
-    Relay.Store.commitUpdate(
-      new AddShipMutation({
-        name,
-        faction: this.props.factions[this.state.factionId],
-      })
-    );
-    this.setState({shipName: ''});
+    const {shipName, factionId, onAddShip} = this.props;
+    onAddShip({shipName, factionId});
   }
 
   handleInputChange(e) {
-    this.setState({
+    this.props.onNameChange({
       shipName: e.target.value,
     });
   }
 
   handleSelectionChange(e) {
-    this.setState({
+    this.props.onSelectionChange({
       factionId: e.target.value,
     });
   }
 
   render() {
-    const {factions} = this.props;
+    const {factions, shipInput} = this.props;
     return (
       <div>
         <ol>
@@ -56,8 +43,8 @@ class StarWarsApp extends React.Component {
             <li key={faction.id}>
               <h1>{faction.name}</h1>
               <ol>
-                {faction.ships.edges.map(({node}) => (
-                  <li key={node.id}><StarWarsShip ship={node} /></li>
+                {faction.ships.map((ship) => (
+                  <li key={ship.id}><StarWarsShip ship={ship} /></li>
                 ))}
               </ol>
             </li>
@@ -67,13 +54,14 @@ class StarWarsApp extends React.Component {
               <ol>
                 <li>
                   Name:
-                  <input type="text" value={this.state.shipName} onChange={this.handleInputChange.bind(this)} />
+                  <input type="text" value={shipInput.name} onChange={this.handleInputChange.bind(this)} />
                 </li>
                 <li>
                   Faction:
-                  <select onChange={this.handleSelectionChange.bind(this)} value={this.state.factionId}>
-                    <option value="0">Galactic Empire</option>
-                    <option value="1">Alliance to Restore the Republic</option>
+                  <select onChange={this.handleSelectionChange.bind(this)} value={shipInput.factionId}>
+                    {shipInput.factionInfos.map(({id, name}) =>
+                      <option value={id}>{name}</option>
+                    )}
                   </select>
                 </li>
                 <li>
@@ -87,23 +75,31 @@ class StarWarsApp extends React.Component {
   }
 }
 
-export default Relay.createContainer(StarWarsApp, {
-  fragments: {
-    factions: () => Relay.QL`
-      fragment on Faction @relay(plural: true) {
-        id,
-        factionId,
-        name,
-        ships(first: 10) {
-          edges {
-            node {
-              id
-              ${StarWarsShip.getFragment('ship')}
-            }
-          }
-        }
-        ${AddShipMutation.getFragment('faction')},
-      }
-    `,
-  },
-});
+StarWarsApp.propTypes = {
+  factions: React.PropTypes.array,
+  shipInput: React.PropTypes.object,
+  onSelectionChange: React.PropTypes.func,
+  onNameChange: React.PropTypes.func,
+  onAddShip: React.PropTypes.func,
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSelectionChange({factionId}) {
+      dispatch({type: 'ship-input/select-faction', factionId});
+    },
+
+    onNameChange({shipName}) {
+      dispatch({type: 'ship-input/set-name', shipName});
+    },
+
+    onAddShip({shipName, factionId}) {
+      dispatch({type})
+    }
+  }
+}
+
+export default let StarWarsAppWrapper = connect(
+  null,
+  mapDispatchToProps
+)(StarWarsApp);
