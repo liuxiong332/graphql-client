@@ -1,4 +1,5 @@
 import Immutable from 'immutable';
+import ArrayRecord from '../models/ArrayRecord';
 import factions from '../models/faction';
 
 class FactionReducer extends Immutable.Record({
@@ -26,7 +27,7 @@ class FactionReducer extends Immutable.Record({
   }
 }
 
-export default class FactionsReducer extends Immutable.List {
+export default class FactionsReducer extends ArrayRecord {
   constructor() {
     super();
     factions.onAdd(this.onAdd.bind(this));

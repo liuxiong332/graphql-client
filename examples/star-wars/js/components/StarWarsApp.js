@@ -50,12 +50,12 @@ export default class StarWarsApp extends React.Component {
               <ol>
                 <li>
                   Name:
-                  <input type="text" value={shipInput.name} onChange={this.handleInputChange.bind(this)} />
+                  <input type="text" value={shipInput.shipName} onChange={this.handleInputChange.bind(this)} />
                 </li>
                 <li>
                   Faction:
                   <select onChange={this.handleSelectionChange.bind(this)} value={shipInput.factionId}>
-                    {shipInput.factionInfos.map(({id, name}) =>
+                    {shipInput.factions.map(({id, name}) =>
                       <option value={id}>{name}</option>
                     )}
                   </select>
@@ -72,7 +72,7 @@ export default class StarWarsApp extends React.Component {
 }
 
 StarWarsApp.propTypes = {
-  factions: React.PropTypes.array,
+  factions: React.PropTypes.object,
   shipInput: React.PropTypes.object,
   onSelectionChange: React.PropTypes.func,
   onNameChange: React.PropTypes.func,
