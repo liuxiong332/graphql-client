@@ -16,7 +16,7 @@ import StarWarsShip from './StarWarsShip';
 
 export default class StarWarsApp extends React.Component {
   handleAddShip() {
-    const {{shipName, factionId}, onAddShip} = this.props;
+    const {shipInput: {shipName, factionId}, onAddShip} = this.props;
     onAddShip({shipName, factionId});
   }
 

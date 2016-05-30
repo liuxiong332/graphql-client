@@ -21,7 +21,7 @@ class FactionReducer extends Immutable.Record({
 
   onAddShip(ship) {
     this._subscriber && this._subscriber(
-      this.set('ships', this.get('ships').push(ship));
+      this.set('ships', this.get('ships').push(ship))
     );
   }
 }
@@ -48,6 +48,6 @@ export default class FactionsReducer extends Immutable.List {
         this._subscriber(this.set(index, newRd));
       });
       this._subscriber(this.push(factionRd));
-    );
+    }
   }
 }

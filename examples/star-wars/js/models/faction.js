@@ -46,4 +46,5 @@ export class FactionCollection {
   }
 }
 
-export default factions = new FactionCollection;
+const factions = new FactionCollection;
+export default factions;

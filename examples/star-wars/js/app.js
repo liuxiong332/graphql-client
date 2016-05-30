@@ -19,8 +19,9 @@ import StarWarsApp from './components/StarWarsApp';
 
 class Wrapper extends React.Component {
   constructor() {
+    super();
     var data = new TotalReducer;
-    data.subscribe((newData) {
+    data.subscribe((newData) => {
       this.setState({data: newData});
     });
     this.state = {data};
@@ -41,6 +42,6 @@ class Wrapper extends React.Component {
 }
 
 ReactDOM.render(
-  <Wrapper />
+  <Wrapper />,
   document.getElementById('root')
 );
