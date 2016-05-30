@@ -13,20 +13,34 @@
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
-import createSagaMiddleware from 'redux-saga';
 
-import appReducer from './reducers';
+import TotalReducer from './reducers/totalReducer';
 import StarWarsApp from './components/StarWarsApp';
 
-const sagaMiddleware = createSagaMiddleware();
+class Wrapper extends React.Component {
+  constructor() {
+    var data = new TotalReducer;
+    data.subscribe((newData) {
+      this.setState({data: newData});
+    });
+    this.state = {data};
+  }
 
-let store = createStore(appReducer, applyMiddleware(sagaMiddleware));
+  render() {
+    let data = this.state.data;
+    let factions = data.get('factions');
+    let shipInput = data.get('shipInput');
+    return (
+      <StarWarsApp factions={factions} shipInput={shipInput}
+        onNameChange={shipInput.changeShipName.bind(shipInput)}
+        onSelectionChange={shipInput.changeFactionId.bind(shipInput)}
+        onAddShip={shipInput.addShip.bind(shipInput)}
+      />
+    );
+  }
+}
 
 ReactDOM.render(
-  <Provider store={store}>
-  	<StarWarsApp />
-  </Provider>,
+  <Wrapper />
   document.getElementById('root')
 );

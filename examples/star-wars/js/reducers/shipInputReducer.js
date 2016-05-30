@@ -29,4 +29,9 @@ export default class ShipInputReducer extends Immutable.Record({
   changeFactionId(id) {
     this._subscriber && this._subscriber(this.set('factionId', id));
   }
+
+  addShip(ship) {
+    let faction = factions.getById(ship.factionId);
+    faction && faction.addShip(ship);
+  }
 }

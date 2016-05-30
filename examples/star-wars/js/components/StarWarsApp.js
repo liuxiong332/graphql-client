@@ -11,27 +11,23 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux'
 
 import StarWarsShip from './StarWarsShip';
-import AddShipMutation from '../mutation/AddShipMutation';
 
-class StarWarsApp extends React.Component {
+export default class StarWarsApp extends React.Component {
   handleAddShip() {
-    const {shipName, factionId, onAddShip} = this.props;
+    const {{shipName, factionId}, onAddShip} = this.props;
     onAddShip({shipName, factionId});
   }
 
   handleInputChange(e) {
-    this.props.onNameChange({
-      shipName: e.target.value,
-    });
+    var shipName = e.target.value;
+    this.props.onNameChange(shipName);
   }
 
   handleSelectionChange(e) {
-    this.props.onSelectionChange({
-      factionId: e.target.value,
-    });
+    var factionId = e.target.value;
+    this.props.onSelectionChange(factionId);
   }
 
   render() {
@@ -82,24 +78,3 @@ StarWarsApp.propTypes = {
   onNameChange: React.PropTypes.func,
   onAddShip: React.PropTypes.func,
 };
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onSelectionChange({factionId}) {
-      dispatch({type: 'ship-input/select-faction', factionId});
-    },
-
-    onNameChange({shipName}) {
-      dispatch({type: 'ship-input/set-name', shipName});
-    },
-
-    onAddShip({shipName, factionId}) {
-      dispatch({type})
-    }
-  }
-}
-
-export default let StarWarsAppWrapper = connect(
-  null,
-  mapDispatchToProps
-)(StarWarsApp);
