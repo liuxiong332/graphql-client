@@ -1,6 +1,8 @@
 import Immutable from 'immutable';
 import ArrayRecord from '../models/ArrayRecord';
+import {CompositeDisposable} from 'event-kit';
 import factions from '../models/faction';
+import ReducerMixin from '../models/ReducerMixin';
 
 class FactionReducer extends Immutable.Record({
   name: '',
@@ -27,28 +29,29 @@ class FactionReducer extends Immutable.Record({
   }
 }
 
-export default class FactionsReducer extends ArrayRecord {
-  constructor() {
-    super();
-    factions.onAdd(this.onAdd.bind(this));
-  }
-
-  subscribe(callback) {
-    this._subscriber = callback;
+export default class FactionsReducer extends ReducerMixin(ArrayRecord) {
+  initialize() {
+    super.initialize();
+    this.addDisposable(factions.observe(this.onAdd.bind(this)));
+    return this;
   }
 
   addFaction(faction) {
     factions.add(faction);
   }
 
-  onAdd(faction) {
-    if (this._subscriber) {
-      let factionRd = new FactionReducer(faction);
+  onAdd(factions) {
+    if (!Array.isArray(factions)) {
+      factions = [factions];
+    }
+
+    factions.forEach((faction) => {
+      let factionRd = new FactionReducer(faction).initialize();
       factionRd.subscribe((newRd) => {
         let index = this.indexOf(factionRd);
-        this._subscriber(this.set(index, newRd));
+        this.trigger(this.set(index, newRd));
       });
-      this._subscriber(this.push(factionRd));
-    }
+      this.trigger(this.push(factionRd));
+    });
   }
 }
