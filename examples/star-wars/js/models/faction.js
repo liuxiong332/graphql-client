@@ -1,5 +1,7 @@
 import {Emitter} from 'event-kit';
 
+let id = 0;
+
 export class Faction {
   constructor({id, name, ships}) {
     this.id = id;
@@ -9,12 +11,13 @@ export class Faction {
   }
 
   addShip(ship) {
-    this.ships.push(ship);
-    this.emitter.emit('add-ship', ship);
+    var newShip = {name: ship.name, id: id++};
+    this.ships.push(newShip);
+    this.emitter.emit('add-ship', newShip);
   }
 
   onAddShip(callback) {
-    this.emitter.on('add-ship', callback);
+    return this.emitter.on('add-ship', callback);
   }
 }
 

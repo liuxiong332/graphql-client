@@ -9,7 +9,7 @@ export default class TotalReducer extends Reducer({
   constructor(values) {
     super(values || {
       factions: FactionsReducer.create(),
-      shipInput: new ShipInputReducer,
+      shipInput: ShipInputReducer.create(),
     });
     this.monitorAllValues();
   }

@@ -14,6 +14,14 @@ import React from 'react';
 
 import StarWarsShip from './StarWarsShip';
 
+function mapToArray(list, callback) {
+  var retArray = [];
+  list.forEach((value, index) => {
+    retArray.push(callback(value, index));
+  });
+  return retArray;
+}
+
 export default class StarWarsApp extends React.Component {
   handleAddShip() {
     const {shipInput: {shipName, factionId}, onAddShip} = this.props;
@@ -35,11 +43,11 @@ export default class StarWarsApp extends React.Component {
     return (
       <div>
         <ol>
-          {factions.map(faction => (
+          {mapToArray(factions, (faction) => (
             <li key={faction.id}>
               <h1>{faction.name}</h1>
               <ol>
-                {faction.ships.map((ship) => (
+                {mapToArray(faction.ships, (ship) => (
                   <li key={ship.id}><StarWarsShip ship={ship} /></li>
                 ))}
               </ol>
@@ -55,8 +63,8 @@ export default class StarWarsApp extends React.Component {
                 <li>
                   Faction:
                   <select onChange={this.handleSelectionChange.bind(this)} value={shipInput.factionId}>
-                    {shipInput.factions.map(({id, name}) =>
-                      <option value={id}>{name}</option>
+                    {mapToArray(shipInput.factions, ({id, name}) =>
+                      <option key={id} value={id}>{name}</option>
                     )}
                   </select>
                 </li>

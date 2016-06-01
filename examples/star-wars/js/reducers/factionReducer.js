@@ -3,9 +3,17 @@ import { Reducer, ArrayReducer } from 'flux-reducer';
 import factions from '../models/faction';
 
 class FactionReducer extends Reducer({
+  id: null,
   name: '',
   ships: new Immutable.List
 }) {
+  constructor(values) {
+    if (Array.isArray(values.ships)) {
+      values.ships = new Immutable.List(values.ships);
+    }
+    super(values);
+  }
+
   initWithFaction(faction) {
     this.faction = faction;
     this.addDisposable(faction.onAddShip(this.onAddShip.bind(this)));
@@ -33,7 +41,7 @@ export default class FactionsReducer extends ArrayReducer {
   }
 
   static createFactionReducer(faction) {
-    return new FactionReducer().initWithCallback(fr => {
+    return new FactionReducer(faction).initWithCallback(fr => {
       fr.initWithFaction(faction);
     });
   }

@@ -1,12 +1,18 @@
-import Immutable from 'immutable';
+import { List } from 'immutable';
 import { Reducer } from 'flux-reducer';
 import factions from '../models/faction';
 
 export default class ShipInputReducer extends Reducer({
   shipName: '',
   factionId: '',
-  factions: new Immutable.List,
+  factions: new List,
 }) {
+  static create() {
+    return new ShipInputReducer({
+      factions: new List(factions.getAll()),
+    });
+  }
+
   constructor(values) {
     super(values || factions.getAll());
     this.addDisposable(factions.onAdd(this.onAdd.bind(this)));
@@ -29,6 +35,6 @@ export default class ShipInputReducer extends Reducer({
 
   addShip(ship) {
     let faction = factions.getById(ship.factionId);
-    faction && faction.addShip(ship);
+    faction && faction.addShip({name: ship.shipName});
   }
 }

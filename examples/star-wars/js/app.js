@@ -19,14 +19,13 @@ import StarWarsApp from './components/StarWarsApp';
 
 class ReducerComponent extends React.Component {
   initWithReducer(reducer) {
-    this.subscription = reducer.subscribe(onHandleChange);
-    this.setState({reducer})
-
     var onHandleChange = (newRd) => {
       this.subscription.dispose();
       this.subscription = newRd.subscribe(onHandleChange);
       this.setState({reducer: newRd});
-    }
+    };
+    this.subscription = reducer.subscribe(onHandleChange);
+    this.setState({reducer});
   }
 
   dispose() {
