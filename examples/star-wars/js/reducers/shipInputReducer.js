@@ -8,8 +8,10 @@ export default class ShipInputReducer extends Reducer({
   factions: new List,
 }) {
   static create() {
+    var allFactions = factions.getAll();
     return new ShipInputReducer({
-      factions: new List(factions.getAll()),
+      factions: new List(allFactions),
+      factionId: allFactions.length > 0 ? allFactions[0].id : '',
     });
   }
 
