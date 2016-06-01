@@ -21,8 +21,25 @@ class FactionReducer extends Reducer({
 }
 
 export default class FactionsReducer extends ArrayReducer {
+  static create() {
+    let reducers = FactionsReducer.createFactionReducers(factions.getAll());
+    return new FactionsReducer(reducers);
+  }
+
+  static createFactionReducers(factionList) {
+    return factionList.map((faction) => {
+      return FactionsReducer.createFactionReducer(faction);
+    });
+  }
+
+  static createFactionReducer(faction) {
+    return new FactionReducer().initWithCallback(fr => {
+      fr.initWithFaction(faction);
+    });
+  }
+
   constructor(values) {
-    super(values || factions.getAll());
+    super(values);
     this.monitorAllValues();
     this.addDisposable(factions.onAdd(this.onAdd.bind(this)));
   }
@@ -31,16 +48,8 @@ export default class FactionsReducer extends ArrayReducer {
     factions.add(faction);
   }
 
-  onAdd(factionList) {
-    if (!Array.isArray(factionList)) {
-      factionList = [factionList];
-    }
-
-    let reducers = factionList.map((faction) => {
-      return new FactionReducer().initWithCallback(fr => {
-        fr.initWithFaction(faction);
-      });
-    });
-    this.trigger(this.push(...reducers));
+  onAdd(faction) {
+    let reducer = FactionsReducer.createFactionReducer(faction);
+    this.trigger(this.push(reducer));
   }
 }

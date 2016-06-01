@@ -3,11 +3,14 @@ import ShipInputReducer from './shipInputReducer';
 import FactionsReducer from './factionReducer';
 
 export default class TotalReducer extends Reducer({
-  factions: new FactionsReducer,
-  shipInput: new ShipInputReducer,
+  factions: null,
+  shipInput: null,
 }) {
-  constructor() {
-    super(...arguments);
+  constructor(values) {
+    super(values || {
+      factions: FactionsReducer.create(),
+      shipInput: new ShipInputReducer,
+    });
     this.monitorAllValues();
   }
 }
