@@ -1,33 +1,27 @@
 import Immutable from 'immutable';
+import { Reducer } from 'flux-reducer';
 import factions from '../models/faction';
 
-export default class ShipInputReducer extends Immutable.Record({
+export default class ShipInputReducer extends Reducer({
   shipName: '',
   factionId: '',
   factions: new Immutable.List,
 }) {
   constructor() {
-    super();
-    factions.onAdd(this.onAdd.bind(this));
-  }
-
-  subscribe(callback) {
-    this._subscriber = callback;
+    super(...arguments);
+    this.addDisposable(factions.onAdd(this.onAdd.bind(this)));
   }
 
   onAdd(faction) {
-    if (this._subscriber) {
-      let factions = this.get('factions');
-      this._subscriber(this.set('factions', factions.push(faction)));
-    }
+    this.trigger(this.set('factions', this.factions.push(faction)));
   }
 
   changeShipName(name) {
-    this._subscriber && this._subscriber(this.set('shipName', name));
+    this.trigger(this.set('shipName', name));
   }
 
   changeFactionId(id) {
-    this._subscriber && this._subscriber(this.set('factionId', id));
+    this.trigger(this.set('factionId', id));
   }
 
   addShip(ship) {

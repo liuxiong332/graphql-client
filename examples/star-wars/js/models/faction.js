@@ -26,13 +26,15 @@ export class FactionCollection {
       this.idToFaction[faction.id] = faction;
     });
     this.emitter = new Emitter;
+    this.add({id: 1, name: 'First'});
+    this.add({id: 2, name: 'Second'});
   }
 
   add(faction) {
     if (!(faction instanceof Faction)) {
       faction = new Faction(faction);
     }
-    factions.push(faction);
+    this.factions.push(faction);
     this.idToFaction[faction.id] = faction;
     this.emitter.emit('add', faction);
   }

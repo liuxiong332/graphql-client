@@ -36,7 +36,7 @@ class ReducerComponent extends React.Component {
 
 class Wrapper extends ReducerComponent {
   constructor() {
-    super();
+    super(...arguments);
     this.initWithReducer(new TotalReducer);
   }
 
