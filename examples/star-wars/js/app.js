@@ -17,20 +17,37 @@ import ReactDOM from 'react-dom';
 import TotalReducer from './reducers/totalReducer';
 import StarWarsApp from './components/StarWarsApp';
 
-class Wrapper extends React.Component {
+class ReducerComponent extends React.Component {
+  initWithReducer(reducer) {
+    this.subscription = reducer.subscribe(onHandleChange);
+    this.setState({reducer})
+
+    var onHandleChange = (newRd) => {
+      this.subscription.dispose();
+      this.subscription = newRd.subscribe(onHandleChange);
+      this.setState({reducer: newRd});
+    }
+  }
+
+  dispose() {
+    this.subscription.dispose();
+  }
+}
+
+class Wrapper extends ReducerComponent {
   constructor() {
     super();
-    var data = new TotalReducer;
-    data.subscribe((newData) => {
-      this.setState({data: newData});
-    });
-    this.state = {data};
+    this.initWithReducer(new TotalReducer);
+  }
+
+  componentWillUnmount() {
+    this.dispose();
   }
 
   render() {
-    let data = this.state.data;
-    let factions = data.get('factions');
-    let shipInput = data.get('shipInput');
+    let reducer = this.state.reducer;
+    let factions = reducer.get('factions');
+    let shipInput = reducer.get('shipInput');
     return (
       <StarWarsApp factions={factions} shipInput={shipInput}
         onNameChange={shipInput.changeShipName.bind(shipInput)}
