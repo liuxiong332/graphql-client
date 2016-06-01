@@ -47,9 +47,8 @@ export class FactionCollection {
     return this.emitter.on('add', callback);
   }
 
-  observe(callback) {
-    callback(this.factions.slice(0));
-    return this.emitter.on('add', callback);
+  getAll() {
+    return this.factions;
   }
 }
 

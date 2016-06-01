@@ -6,10 +6,6 @@ class FactionReducer extends Reducer({
   name: '',
   ships: new Immutable.List
 }) {
-  constructor() {
-    super(...arguments);
-  }
-
   initWithFaction(faction) {
     this.faction = faction;
     this.addDisposable(faction.onAddShip(this.onAddShip.bind(this)));
@@ -25,22 +21,22 @@ class FactionReducer extends Reducer({
 }
 
 export default class FactionsReducer extends ArrayReducer {
-  constructor() {
-    super(...arguments);
+  constructor(values) {
+    super(values || factions.getAll());
     this.monitorAllValues();
-    this.addDisposable(factions.observe(this.onAdd.bind(this)));
+    this.addDisposable(factions.onAdd(this.onAdd.bind(this)));
   }
 
   addFaction(faction) {
     factions.add(faction);
   }
 
-  onAdd(factions) {
-    if (!Array.isArray(factions)) {
-      factions = [factions];
+  onAdd(factionList) {
+    if (!Array.isArray(factionList)) {
+      factionList = [factionList];
     }
 
-    let reducers = factions.map((faction) => {
+    let reducers = factionList.map((faction) => {
       return new FactionReducer().initWithCallback(fr => {
         fr.initWithFaction(faction);
       });

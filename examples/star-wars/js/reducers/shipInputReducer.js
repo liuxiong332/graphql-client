@@ -7,13 +7,16 @@ export default class ShipInputReducer extends Reducer({
   factionId: '',
   factions: new Immutable.List,
 }) {
-  constructor() {
-    super(...arguments);
+  constructor(values) {
+    super(values || factions.getAll());
     this.addDisposable(factions.onAdd(this.onAdd.bind(this)));
   }
 
-  onAdd(faction) {
-    this.trigger(this.set('factions', this.factions.push(faction)));
+  onAdd(factionList) {
+    if (!Array.isArray(factionList)) {
+      factionList = [factionList];
+    }
+    this.trigger(this.set('factions', this.factions.push(...factionList)));
   }
 
   changeShipName(name) {
